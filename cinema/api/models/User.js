@@ -49,48 +49,48 @@ module.exports = {
       collection: 'movie',
       via: 'user'
     },
-   isAdmin:{
-     type: 'boolean',
-     defaultsTo: false
-   }
-    
+    isAdmin:{
+      type: 'boolean',
+      defaultsTo: false
+    }
+
   },
   beforeCreate(values, next) {
     bcrypt.genSalt(10, (err, salt) => {
+      if (err) {
+        sails.log.error(err);
+        return next();
+      }
+
+      bcrypt.hash(values.password, salt, (err, hash) => {
         if (err) {
-            sails.log.error(err);
-            return next();
+          sails.log.error(err);
+          return next();
         }
-
-        bcrypt.hash(values.password, salt, (err, hash) => {
-            if (err) {
-                sails.log.error(err);
-                return next();
-            }
-            values.encryptedPassword = hash; // Here is our encrypted password
-            return next();
-        });
+        values.encryptedPassword = hash; // Here is our encrypted password
+        return next();
+      });
     });
-},
+  },
 
-comparePassword(password, encryptedPassword) {
+  comparePassword(password, encryptedPassword) {
 
-    return new Promise(function(resolve, reject) {
-        bcrypt.compare(password, encryptedPassword, (err, match) => {
-            if (err) {
-                sails.log.error(err);
-                return reject("Something went wrong!");
-            }
-            if (match) return resolve();
-            else return reject("Mismatch passwords");
-        });
-    });
-},
- 
- 
- 
+    return new Promise(((resolve, reject) => {
+      bcrypt.compare(password, encryptedPassword, (err, match) => {
+        if (err) {
+          sails.log.error(err);
+          return reject('Something went wrong!');
+        }
+        if (match) {return resolve();}
+        else {return reject('Mismatch passwords');}
+      });
+    }));
+  },
 
-  
+
+
+
+
   validationMessages: {
     firstName: {
       required: 'First name is required',
@@ -103,6 +103,6 @@ comparePassword(password, encryptedPassword) {
     },
   },
 
-  
+
 };
 

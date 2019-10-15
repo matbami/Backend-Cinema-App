@@ -20,7 +20,7 @@
 //             return res.send({status: 400, error : err});
 
 //         }
-       
+
 //     },
 
 
@@ -34,10 +34,10 @@
 //         catch(err){
 
 //         }
-       
+
 //     },
 
-    
+
 //     // list users
 //     async list(req, res){
 //         try {
@@ -48,7 +48,7 @@
 //         catch(err){
 
 //         }
-       
+
 //     },
 
 
@@ -62,7 +62,7 @@
 //         catch(err){
 
 //         }
-       
+
 //     },
 
 //     //delete a user
@@ -75,9 +75,9 @@
 //         catch(err){
 
 //         }
-       
+
 //     }
-  
+
 
 // };
 
@@ -88,54 +88,54 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 module.exports = {
-    async create(req, res){
-      try {
-        const data = req.body;
-        
-        criteria = {
-            id: data.movie
-        }
-        const movie = await Movie.findOne(criteria)
-        const price = movie.basePrice
-        const intPrice = parseInt(price,10)
-        console.log(intPrice)
-        data.amount = intPrice * data.numberOfSeats
-        console.log(data.amount)
-        const payment = await Payment.create(data).fetch()
-        
-       
-        return res.send({ status: 201, message: 'Payment created successfully', payment });
+  async create(req, res){
+    try {
+      const data = req.body;
 
-        
+      criteria = {
+        id: data.movie
+      };
+      const movie = await Movie.findOne(criteria);
+      const price = movie.basePrice;
+      const intPrice = parseInt(price,10);
+      console.log(intPrice);
+      data.amount = intPrice * data.numberOfSeats;
+      console.log(data.amount);
+      const payment = await Payment.create(data).fetch();
 
-    
-      } catch (err) {
-        console.log(err)
-        return res.send({ status: 400, error: err});
+
+      return res.send({ status: 201, message: 'Payment created successfully', payment });
+
+
+
+
+    } catch (err) {
+      console.log(err);
+      return res.send({ status: 400, error: err});
+    }
+  },
+  async read(req, res) {
+    try {
+      const criteria = {
+        id: req.params.id,
+
+      };
+
+      const payment = await Payment.findOne(criteria).populate('user').populate('movie');
+
+      if (!payment) {
+        return res.send(404, 'Payment not found', null);
       }
-    },
-    async read(req, res) {
-      try {
-        const criteria = {
-          id: req.params.id,
-         
-        };
-        
-        const payment = await Payment.findOne(criteria).populate('user').populate('movie');
-       
-        if (!payment) {
-          return res.send(404, 'Payment not found', null);
-        }
-       
-        return res.send({ status: 201, message: 'Payment retrieved successfully', payment });
-      } catch (err) {
-        
-        return res.send({status: 400, error : err});
-      }
-    },
-   
-   
-  };
-  
-  
+
+      return res.send({ status: 201, message: 'Payment retrieved successfully', payment });
+    } catch (err) {
+
+      return res.send({status: 400, error : err});
+    }
+  },
+
+
+};
+
+
 
